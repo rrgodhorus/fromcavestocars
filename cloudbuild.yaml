@@ -14,7 +14,7 @@ steps:
       - "-c"
       - |
         gcloud builds submit \
-          --pack=gcr.io/buildpacks/builder:latest \
+          --pack \
           --tag=us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
           .
 
