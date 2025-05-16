@@ -880,7 +880,9 @@ def main(clouddeploy=False):
         # Run the webserver
         print(f"Starting the web server with IP: {args.ip} and Port: {args.port}")
         print(f"Interrupt with Ctrl-C.")
-        run_webserver(hostname=args.ip, port=args.port)
+        port = int(os.environ.get("PORT", 8080))
+        run_webserver(hostname="0.0.0.0", port=port)
+#        run_webserver(hostname=args.ip, port=args.port)
 
 if __name__ == "__main__":
     main()
