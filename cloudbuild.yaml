@@ -8,15 +8,12 @@ options:
 
 steps:
   # 2) Build & push your image via the 'pack' flag to gcloud:
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        gcloud builds submit \
-          --pack \
-          --tag=us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
-          .
+  - name: "gcr.io/buildpacks/builder"
+    args:  [
+        "build",
+        "gcr.io/from-caves-to-ca-1746047629693/cloud-run-source-deploy",
+        "--path=."
+      ]
 
   # 3) Deploy the built image to Cloud Run.
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
