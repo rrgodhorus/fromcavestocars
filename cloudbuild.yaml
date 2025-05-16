@@ -1,0 +1,31 @@
+# cloudbuild.yaml
+
+# 1) Ensure logs are stored in a user-owned, regional bucket.
+options:
+  defaultLogsBucketBehavior: "REGIONAL_USER_OWNED_BUCKET"
+
+steps:
+  # 2) Build the container image using Google Buildpacks.
+  - name: "gcr.io/buildpacks/builder"
+    args:
+      - "pack"
+      - "build"
+      # Replace with your Artifact Registry repo and image name:
+      - "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
+
+  # 3) Deploy the built image to Cloud Run.
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        # Replace with your Cloud Run service name:
+        gcloud run deploy fromcavestocars \
+          --image us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
+          --region us-central1 \
+          --platform managed \
+          --quiet
+
+# 4) Tell Cloud Build which image(s) to push to Artifact Registry.
+images:
+  - "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
