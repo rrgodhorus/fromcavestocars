@@ -132,7 +132,6 @@ def finalize_login(user):
     # 5) Commit all deletes/updates in one transaction
     USERDB.session.commit()
 
-    print(f"guest_id: {guest_id} userstatedict: {userstatedict}")
     if guest_id in userstatedict:
         # copy the user's state over (what boxes are filled)...
         userstatedict[user.id] = userstatedict.pop(guest_id)
@@ -357,7 +356,6 @@ def home():
         # Initialize user state
         userstatedict[uid]={}
         userstatedict[uid]['state'] = {}
-        print("Initializing...")
 
 
     # Generate the home page with links
@@ -581,10 +579,8 @@ def _add_known_item_to_current_user(item):
         # automatically converts current_user to the correct foreign key
         if current_user.is_authenticated:
             new_item = Item(name=item, user_id=current_user.id)
-            print(f"Adding item {item} to user {current_user.id},get_known_items()={get_known_items()}")
         else:
             new_item = Item(name=item, guest_id=session['guest_id'])
-            print(f"Adding item {item} to guest {session['guest_id']},get_known_items()={get_known_items()}")
         USERDB.session.add(new_item)
         USERDB.session.commit()
         return True
@@ -629,7 +625,6 @@ def game():
     page_description = page_data['page_description']
 
     base_items = page_data['base_items']
-    print(f"Base items: {base_items}")
 
     # TODO: Make this a splash page that comes up first...
 
@@ -637,7 +632,6 @@ def game():
     # If I didn't know this, add it.
     for item in base_items:
         if _add_known_item_to_current_user(item['name']):
-            print(f"Adding item: {item['name']}")
             new_items.append(item['name'])
 
     # If we just finished something, add it...
@@ -660,10 +654,8 @@ def game():
         completion_url=url_for('win', item_name=current_item)
 
     availableitems = get_known_items()
-    print(f"Available items: {availableitems}")
 
     imageboxes = _get_image_boxes(availableitems,box_groups)
-    print(f"Image boxes: {imageboxes}")
     
 
     return render_template(
@@ -764,11 +756,8 @@ def problem():
     # request.referrer from Flask
     referrer = request.args.get('referrer', request.referrer, type=str)
 
-    print(f"Referrer: {referrer}")
     item_name = request.args.get('item_name', '', type=str)
-    print(f"Item name: {item_name}")
     description = ITEMDB.items[item_name].description
-    print(f"Description: {description}")
 
     imagelist = []
     for count,image in enumerate(ITEMDB.items[item_name].image):
