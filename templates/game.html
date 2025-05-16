@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>From Caves To Cars</title>
+    <style>
+
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+
+    header img {
+      height: 60px;
+      margin-right: 20px;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    section.columns {
+      display: flex;
+      height: 200px;
+      justify-content: space-around;
+      padding: 20px;
+      text-align: justify;
+    }
+
+    section.columns div {
+      width: 45%;
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden; /* optional: hide horizontal scrollbar */
+      padding-right: 10px; /* optional: space for scrollbar */
+    }
+
+    .board {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 30px;
+    }
+
+    .box img {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border: 2px solid #aaa;
+      border-radius: inherit;  /* inherit from parent box (for oval/square) */
+    }
+
+    .icon img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border: 2px solid #aaa;
+      border-radius: inherit;  /* inherit from parent box (for oval/square) */
+    }
+
+    .box {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+
+    /* square */
+    .box.square {
+      border-radius: 0;
+      border: 2px dashed #777;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+    }
+
+    .icon.square {
+      border-radius: 0;
+      border: 2px dashed #777;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+    }
+
+    /* oval */
+    .box.oval {
+      border-radius: 25px; /* or use 9999px for more pill-like */
+      width: 40px;
+      height: 60px;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      border: 2px solid #aaa;
+    }
+
+    .icon.oval {
+      border-radius: 25px; /* or use 9999px for more pill-like */
+      width: 40px;
+      height: 60px;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #aaa;
+      display: flex;
+    }
+
+    .highlight-valid {
+      border-color: green;
+    }
+
+    .highlight-invalid {
+      border-color: red;
+    }
+
+    .box.correct-drop {
+      background-color: #d4f8d4; /* light green */
+      border-color: #4CAF50;     /* optional: green border */
+    }
+
+    .box.invalid-drop {
+      background-color: rgba(255, 0, 0, 0.2);
+      border-color: red;
+      position: relative;
+    }
+
+    .box.invalid-drop::after {
+      content: "✖";
+      position: absolute;
+      color: red;
+      font-size: 2em;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      50% { transform: rotate(10deg); }
+      75% { transform: rotate(-10deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .shake {
+      animation: shake 0.4s;
+      border: 2px solid red !important;
+      background-color: rgba(255, 0, 0, 0.1); /* optional for emphasis */
+    }
+
+    .icon-bank {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 20px;
+      justify-content: flex-start;
+      padding-bottom: 40px;
+      height: 100px;
+      margin-top: 60px;
+      overflow-x: auto;
+      overflow-y: hidden; /* optional: disables vertical scrolling */
+    }
+
+    .icon-bank::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .icon-bank::-webkit-scrollbar-thumb {
+      background-color: #aaa;
+      border-radius: 4px;
+    }
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      cursor: grab;
+    }
+
+    .icon-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80px; /* adjust to match or slightly exceed icon width */
+    }
+
+    .icon-label {
+      margin-top: 4px;
+      font-size: 0.85em;
+      text-align: center;
+      color: #333;
+    }
+
+    .icon.green-tint {
+      filter: hue-rotate(80deg) saturate(1.5);
+    }
+
+    .column.highlighted {
+      background-color: #e0f0ff; /* pale blue */
+      transition: background-color 0.8s ease;
+    }
+
+    .tag-list {
+      margin-top: 10px;
+    }
+
+    .tag {
+      display: inline-block;
+      background-color: #eef;
+      color: #005;
+      padding: 4px 8px;
+      margin-right: 6px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.9em;
+    }
+
+    .tag:hover {
+      background-color: #cce;
+    }
+
+    .header img {
+      max-width: 100px;
+      max-height: 100px;
+      display: inline-block;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center; 
+      gap: 1em;
+    }
+
+    .header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end; /* push items to the right */
+      gap: 20px;                  /* space between text and image */
+      padding: 20px;              /* adjust as needed */
+    }
+
+    .header-text {
+      margin: 0;                  /* remove default h1 margins */
+      text-align: right;          /* align multiline text to the right */
+    }
+
+    #overlay-image {
+      width: 100px;               /* fix your desired size */
+      height: auto;
+      display: block;
+    }
+
+    .group-container {
+      display: flex;
+      min-height:160px;
+      justify-content: flex-start;
+      gap: 60px;
+      /*  align-items: flex-start; */
+      align-items: flex-end;
+      margin-top: 40px;
+    }
+
+    .group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .group-content {
+      min-height: 130px; /* Adjust based on tallest expected content (box + image) */
+      height:130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .group-label {
+      font-weight: bold;
+      text-align: center;
+      min-width: 100px;
+      margin-top: 5px;
+    }
+
+    .group-label.completed {
+      color: white;
+      background-color: green;
+    }
+
+    .group.completed {
+      background-color: #e0ffe0; /* very light green */
+    }
+
+    .group-image,
+    .group-image-spacer {
+      height: 40px;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .box-row {
+      display: flex;
+      gap: 20px;
+      min-height: 60px;
+      align-items: flex-start; /* ensures boxes align along the top */
+    }
+
+    .box-row-empty {
+      height: 65px; /* Ensures the empty row has the same height as the boxes.
+                       needs to be the box height + the margin on the 
+                         group-itmage-spacer*/
+      gap: 20px;
+    }
+
+    .box.highlight-valid {
+      border-color: green;
+    }
+
+    .box.highlight-invalid {
+      border-color: red;
+    }
+
+    .special-drop {
+      background-color: #f0f8ff;
+      border: 2px dashed #339;
+      text-align: center;
+      font-weight: bold;
+      padding: 20px;
+    }
+
+    .right-item {
+      margin-left: auto;  /* pushes this to the far right */
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #page-wrapper {
+      position:relative;
+    }
+
+    #overlay-image {
+      width: 100px;        /* or any desired width */
+      height: 100px;        /* maintains aspect ratio */
+      max-height: 100px;   /* optional limit on height */
+      display: block;
+      object-fit: cover;
+    }
+
+    #completion-overlay.overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vw;
+      background-color: rgba(240, 255, 240, 0.96); /* pale green tint */
+      display: none;
+      z-index: 9999; /* ensures it's on top of everything */
+    }
+
+    #completion-overlay.show {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    #completion-overlay .overlay-content {
+      width: 100%;
+      max-width: 90vw;
+      text-align: justify;
+      align-items: center;
+    }
+
+    #completion-overlay .overlay-content .header-flex {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    #completion-overlay .overlay-columns {
+        display: flex;
+        flex-wrap: nowrap;        /* prevents wrapping */
+        gap: 20px;
+        max-height: 50vh;         /* only cover up to 50% of viewport height */
+        overflow-x: auto;         /* scroll sideways if too many columns */
+        padding-bottom: 10px;     /* space for scrollbar */
+    }
+
+    #completion-overlay .overlay-columns .column {
+      flex: 0 0 280px;           /* fixed width per column (~5 fit in 1000px) */
+      overflow-y: auto;          /* scroll within column if text is long */
+      max-height: 100%;          /* restrict height to match parent */
+      background: #f8fff8;       /* subtle background for clarity */
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    #completion-overlay .overlay-top {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    #completion-overlay .overlay-footer {
+      margin-top: 40px;
+      font-size: 1.2em;
+      text-align: center;
+    }
+
+    /* Horizontal scrollbar (for the container) */
+    #completion-overlay .overlay-columns::-webkit-scrollbar {
+      height: 12px;
+    }
+
+    #completion-overlay .overlay-columns::-webkit-scrollbar-thumb {
+      background-color: #90c290;
+      border-radius: 6px;
+    }
+
+    .down-arrow {
+      width: 20px !important;
+      height: 20px !important;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.6;
+      transition: opacity 0.2s ease;
+      pointer-events: auto; /* ensures the link is clickable */
+      z-index: 1;
+    }
+
+    .arrow-link:hover .down-arrow {
+      opacity: 1;
+    }
+
+    .scroll-wrapper {
+      overflow-x: auto;
+      overflow-y: hidden; /* optional: disables vertical scrolling */
+      width: 100%;
+      padding: 0 20px; /* optional: space for scrollbar */
+      box-sizing: border-box; /* ensures padding doesn't affect width */
+      -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+      scroll-padding: 0 20px; /* optional: space for scrollbar */
+    }
+
+    .new-items-section {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .new-items-section h3 {
+      margin-bottom: 12px;
+      font-size: 1.1em;
+      color: #333;
+    }
+
+    .new-items-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 16px;
+
+      /* limit height to 60% of viewport and allow scrolling */
+      max-height: 60vh;
+      overflow-y: auto;
+      overflow-x: hidden;  /* prevent horizontal scroll */
+      padding-right: 8px;  /* room for scrollbar so cards don’t get cut off */
+    }
+
+    .new-item-card {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      width: 180px;
+      padding: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .new-item-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .new-item-card h4 {
+      margin: 6px 0 4px;
+      font-size: 1em;
+      color: #222;
+    }
+
+    .new-item-card p {
+      font-size: 0.85em;
+      color: #555;
+      text-align: justify;
+      max-height: 3.5em;  /* roughly 2 lines */
+      overflow: hidden;
+    }
+
+    #intro-overlay.overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(240, 255, 240, 0.96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    #intro-overlay .overlay-content {
+      max-width: 800px;
+      padding: 30px;
+      background: white;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    #intro-overlay .button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none; border-radius:4px;
+      background: #007bff; color: #fff;
+      cursor: pointer;
+    }
+    #intro-overlay .button:hover {
+      background: #0056b3;
+    }
+
+    </style>
+  </head>
+  <body>
+
+    <!-- Hidden data for JavaScript -->
+    <div id="hidden-data" box-fills = "{{ box_fills}}" data-path="{{ exploration_path }}" data-item-name="{{ item_name }}"></div>
+
+    <!-- Header -->
+    <div class="header">
+      <a href="/home">
+        <img src="static/images/favicon.png" alt="Header Image">
+      </a>
+      <h1>{{ header_title }}</h1>
+      <div class="tag-list">
+        {% for tag in header_tags %}
+        <a href="{{ tag.url }}" class="tag">{{ tag.label }}</a>
+        {% endfor %}
+      </div>
+      <img src="{{ header_image_url }}" alt="Header Image">
+
+      <div class="right-item">
+        <div class="user-info" onclick="location.href='{{ url_for('profile',backurl=url_for('home')) }}'">
+          {% if current_user.is_authenticated %}
+            <p><a href="{{ url_for('profile') }}">Profile for ({{ current_user.username }})</a></p>
+            <p><a href="{{ url_for('logout') }}">Logout</a></p>
+          {% else %}
+            <p><a href="{{ url_for('profile') }}">(Guest) Profile</a></p>
+            <p><a href="{{ url_for('login') }}">Login</a></p>
+          {% endif %}
+        </div>
+        <div id="problem-drop-box" class="box special-drop">
+          Spotted a problematic item?  Drag it here.
+        </div>
+      </div>
+    </div>
+
+    <div id="page-wrapper">
+
+      <!-- Text Columns -->
+      <section class="columns">
+        <div id="column1" class="column">
+          <p>Hover over a step to learn about it.</p>
+        </div>
+        <div id="column2" class="column">
+          <p>Hover over a tool or item to learn about it.</p>
+        </div>
+      </section>
+
+      <div class="scroll-wrapper">
+        <!-- Drop Boxes and icons -->
+        <div class="group-container">
+          {% for group in box_groups %}
+          <div class="group">
+            {% if group.boxes %}
+            <div class="box-row">
+              {% for box in group.boxes %}
+              <div class="box {{ box.shape }}
+                          {% if (box.id|string) in box_fills %}correct-drop{% endif %}"
+                   id="{{ box.id }}"
+                   data-accepts="{{ box.accepts }}"
+                   data-description="{{ box.description }}"
+                   data-arrow-url="{{ box.arrow_url }}">
+
+                {% if (box.id|string) in box_fills %}
+                <img src="{{ box_fills[box.id|string] }}"
+                     class="icon dropped green-tint"
+                     draggable="false">
+                {% elif box.arrow_url %}
+                <a href="{{ box.arrow_url }}" class="arrow-link">
+                  <img src="/static/images/down-arrow.png" class="down-arrow" alt="More Info">
+                </a>
+                {% endif %}
+
+              </div>
+              {% endfor %}
+            </div>
+            <img src="static/images/curlybrace.png" class="group-image" alt="{{ group.label }}">
+            <div class="group-label" data-description="{{ group.description }}">
+              {{ group.label }}
+            </div>
+            {% else %}
+            <div class="box-row-empty"></div>
+            <div class="group-image-spacer"></div>
+            <div class="group-label" data-description="{{ group.description }}">
+              {{ group.label }}
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="scroll-wrapper">
+        <!-- Icon Bank -->
+        <div class="icon-bank">
+          {% for image in images %}
+          <div class="icon-wrapper">
+            <img src="{{ image.url }}"
+                 class="icon {{ image.shape }}"
+                 draggable="true"
+                 data-name="{{ image.name }}"
+                 data-description="{{ image.description }}">
+            <div class="icon-label">{{ image.name }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        let isDragging = false;
+        let draggedName = null;
+        let draggedSrc = null;
+
+        const column2 = document.getElementById('column2');
+        const icons = document.querySelectorAll('.icon');
+        const boxes = document.querySelectorAll('.group-container .box');
+
+        const box_fills = document.getElementById('hidden-data').getAttribute('box-fills');
+
+        // Do the problem drop box
+        const problemDropBox = document.getElementById('problem-drop-box');
+
+        if (problemDropBox) {
+          problemDropBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            problemDropBox.classList.add('drop-hover');
+          });
+
+          problemDropBox.addEventListener('dragleave', () => {
+            problemDropBox.classList.remove('drop-hover');
+          });
+
+          problemDropBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            problemDropBox.classList.remove('drop-hover');
+
+            const data = e.dataTransfer.getData('text/plain');
+            console.log('Dropped data:', data);
+            const dragged = document.querySelector(`[data-name="${data}"]`);
+            console.log('Dropped:', dragged);
+
+            if (draggedName) {
+              // Redirect to problem page with itemName
+              const currentUrl = window.location.href;
+              window.location.href = `/problem?item_name=${encodeURIComponent(draggedName)}&referrer=${encodeURIComponent(currentUrl)}`;
+            }
+            else {
+              const currentUrl = window.location.href;
+              window.location.href = `/problem?item_name={{ header_title }}&referrer=${encodeURIComponent(currentUrl)}`;
+            }
+
+          });
+        }
+
+        // Do the boxes / container groups, etc.
+        
+        for (const [boxId, iconName] of Object.entries(box_fills)) {
+          const box = document.getElementById(boxId);
+          const icon = document.querySelector(`.draggable-icon[data-name="${iconName}"]`);
+          if (box && icon) {
+            const src = icon.getAttribute('src');
+
+            // Build image element just like on correct drop
+            const img = document.createElement('img');
+            img.src = src;
+            img.classList.add('icon', 'dropped', 'green-tint');
+            img.draggable = false;
+            box.appendChild(img);
+
+            box.classList.add('correct-drop');
+
+            // Remove arrow if present
+            const arrowLink = box.querySelector('.arrow-link');
+            if (arrowLink) {
+              arrowLink.remove();
+            }
+          }
+        }
+
+        // Image icon logic
+        icons.forEach(icon => {
+          icon.addEventListener('mouseenter', () => {
+            if (!isDragging) {
+              column2.textContent = icon.dataset.description || '';
+              column2.classList.add('highlighted');
+            }
+          });
+
+          icon.addEventListener('mouseleave', () => {
+            if (!isDragging) {
+              column2.classList.remove('highlighted');
+            }
+          });
+
+          icon.addEventListener('click', () => {
+            column2.textContent = icon.dataset.description || '';
+            column2.classList.add('highlighted');
+          });
+
+          icon.addEventListener('dragstart', e => {
+            isDragging = true;
+            draggedName = icon.dataset.name;
+            draggedSrc = icon.src;
+
+            column2.textContent = icon.dataset.description || '';
+            column2.classList.add('highlighted');
+
+            e.dataTransfer.setData('name', draggedName);
+            e.dataTransfer.setData('src', draggedSrc);
+          });
+
+          icon.addEventListener('dragend', () => {
+            isDragging = false;
+            column2.classList.remove('highlighted');
+          });
+        });
+
+        // Box logic
+        boxes.forEach(box => {
+          const acceptedName = box.dataset.accepts;
+          const boxDescription = box.dataset.description;
+
+          box.addEventListener('mouseenter', () => {
+            column2.textContent = boxDescription || '';
+            column2.classList.add('highlighted');
+          });
+
+          box.addEventListener('mouseleave', () => {
+            column2.classList.remove('highlighted');
+          });
+
+          box.addEventListener('click', () => {
+            column2.textContent = boxDescription || '';
+            column2.classList.add('highlighted');
+          });
+
+          box.addEventListener('dragover', e => e.preventDefault());
+
+          box.addEventListener('dragenter', e => {
+            e.preventDefault();
+            if (draggedName === acceptedName) {
+              box.classList.add('highlight-valid');
+            } else {
+              box.classList.add('highlight-invalid', 'show-x');
+            }
+          });
+
+          box.addEventListener('dragleave', () => {
+            box.classList.remove('highlight-valid', 'highlight-invalid', 'show-x');
+          });
+
+          box.addEventListener('drop', async e => {
+            e.preventDefault();
+            box.classList.remove('highlight-valid', 'highlight-invalid', 'show-x');
+
+            const name = draggedName;
+            const src = draggedSrc;
+            const boxId = box.id;
+
+            const exploration_path = document.getElementById('hidden-data').dataset.path;
+            const item_name = document.getElementById('hidden-data').dataset.itemName;
+
+            const response = await fetch('/drop', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, box_id: boxId, item_name: item_name, exploration_path: exploration_path, image_url: src })
+            });
+
+            const result = await response.json();
+
+            const arrowLink = box.querySelector('.arrow-link');
+
+            let hasarrow = false;
+            if (arrowLink) {
+                hasarrow = true;
+            }
+
+            if ((result.status === 'locked') &&
+              (( hasarrow === false && box.children.length === 0)||(
+                hasarrow && box.children.length === 1))) {
+              const img = document.createElement('img');
+              img.src = src;
+              img.classList.add('icon', 'dropped','green-tint');
+              img.draggable = false;
+              box.appendChild(img);
+              box.classList.add('correct-drop');
+              // Remove arrow if present
+              if (arrowLink) {
+                arrowLink.remove();
+              }
+            } else {
+              box.classList.add('shake');
+              setTimeout(() => box.classList.remove('shake'), 500);
+            }
+          });
+        });
+
+        const groupLabels = document.querySelectorAll('.group-label');
+        const column1 = document.getElementById('column1'); // or use a specific class
+
+        groupLabels.forEach(label => {
+          const desc = label.dataset.description;
+
+          label.addEventListener('mouseenter', () => {
+            column1.textContent = desc;
+            column1.classList.add('highlighted');
+          });
+
+          label.addEventListener('mouseleave', () => {
+            column1.classList.remove('highlighted');
+            // keep the text
+          });
+
+          label.addEventListener('click', () => {
+            column1.textContent = desc;
+            column1.classList.add('highlighted');
+          });
+        });
+      });
+    </script>
+    <script>
+      document.querySelectorAll('.group-label').forEach(label => {
+        label.addEventListener('click', () => {
+          const group = label.closest('.group');
+          const boxes = group.querySelectorAll('.box');
+
+          const allCorrect = boxes.length === 0 || [...boxes].every(box =>
+            box.classList.contains('correct-drop') && box.children.length > 0
+          );
+
+          if (allCorrect) {
+            label.classList.add('completed');
+            group.classList.add('completed');
+          }
+        });
+      });
+    </script>
+
+
+    <!-- Handles the "completed" overlay -->
+
+    <script>
+      function checkAllGroupsCompleted() {
+        const groupLabels = document.querySelectorAll('.group-label');
+        return Array.from(groupLabels).every(label => label.classList.contains('completed'));
+      }
+
+      function showCompletionOverlay() {
+        const overlay = document.getElementById('completion-overlay');
+        overlay.classList.remove('hidden');
+        overlay.classList.add('show');
+      }
+
+      document.querySelectorAll('.group-label').forEach(label => {
+        label.addEventListener('click', () => {
+          if (checkAllGroupsCompleted()) {
+            showCompletionOverlay();
+          }
+        });
+      });
+    </script>
+
+    <!-- The “Intro” overlay, shown on page load -->
+    {% if not settings.skip_intro and new_items %}
+    <div id="intro-overlay" class="overlay">
+      <div class="overlay-content">
+        <h2>While searching you find the following useful items:</h2>
+        <div class="new-items-grid">
+          {% for item_name in new_items %}
+          {% set img = (images | selectattr('name','equalto',item_name) | list).0 %}
+          {% if img %}
+          <div class="new-item-card">
+            <img src="{{ img.url }}" alt="{{ img.name }}">
+            <h4>{{ img.name }}</h4>
+            <p>{{ img.description }}</p>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        <button id="intro-continue" class="button">Continue</button>
+      </div>
+    </div>
+    {% endif %}
+
+
+
+    <!-- The "completed" overlay -->
+    <div id="completion-overlay" class="overlay hidden">
+      <div class="overlay-content">
+        <div class="header-flex">
+          <h1 class="header-text">{{ item_name }}</h1>
+          <img id="overlay-image" src="{{ completion_image_url }}" alt="Completion Image">
+        </div>
+        <div class="overlay-top">
+          <p id="overall-description">
+          {{ page_description }}
+          </p>
+        </div>
+
+        <div class="overlay-columns" id="overlay-columns">
+          {% for group in box_groups %}
+            <div class="column"
+                 data-text="{{ group.description|e }}">
+              {% if settings.skip_make_text %}
+                {{ group.description }}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="overlay-footer">
+          <a href="{{ completion_url }}">Let's add this to the things we know!!</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const skip = {{ 'true' if settings.skip_make_text else 'false' }};
+        const cols = Array.from(document.querySelectorAll('#overlay-columns .column'));
+
+        function typeColumn(el, text, delay=10) {
+          return new Promise(resolve => {
+            let i = 0;
+            const timer = setInterval(() => {
+              el.textContent += text.charAt(i++);
+              if (i >= text.length) {
+                clearInterval(timer);
+                resolve();
+              }
+            }, delay);
+          });
+        }
+
+        let _columnsRevealed = false;
+
+        async function revealColumns() {
+          if (_columnsRevealed) return;
+          _columnsRevealed = true;
+
+          if (skip) {
+            // show immediately
+            cols.forEach(c => c.textContent = c.dataset.text);
+            return;
+          }
+
+          // 1) Pre-measure and lock in heights
+          cols.forEach(c => {
+            // Temporarily fill with full text
+            c.textContent = c.dataset.text;
+            // Measure the height required
+            const h = c.scrollHeight;
+            // Clear back out
+            c.textContent = '';
+            // Enforce the measured height so it won’t resize
+            c.style.minHeight = h + 'px';
+          });
+
+          // 2) Animate each in sequence
+          for (const col of cols) {
+            await typeColumn(col, col.dataset.text);
+          }
+        }
+
+        // When overlay is shown, kick off the animation
+        const observer = new MutationObserver((list) => {
+          for (const m of list) {
+            if (m.attributeName === 'class') {
+              const ov = m.target;
+              if (ov.classList.contains('show')) {
+                revealColumns();
+                observer.disconnect();
+              }
+            }
+          }
+        });
+
+        const overlay = document.getElementById('completion-overlay');
+        observer.observe(overlay, { attributes: true });
+      });
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const intro = document.getElementById('intro-overlay');
+        if (!intro) return;
+
+        document.getElementById('intro-continue').addEventListener('click', () => {
+          intro.style.display = 'none';
+          // now user can interact with the page as normal, and the completion-overlay
+          // remains hidden until it’s time to show it.
+        });
+      });
+    </script>
+
+  </body>
+</html>
+

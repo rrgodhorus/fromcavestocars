@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Log In — From Caves To Cars</title>
+  <style>
+    /* Full‐page background */
+    body, html {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: url("{{ url_for('static', filename='images/ChatGPT_fctc_think.png') }}") no-repeat center center fixed;
+      background-size: cover;
+      font-family: sans-serif;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Login container */
+    .login-container {
+      background: rgba(255,255,255,0.9);
+      padding: 30px 40px;
+      border-radius: 8px;
+      width: 320px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin: 8px 0 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    .button-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .button-row button,
+    .button-row a.button-link {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .button-row button:hover,
+    .button-row a.button-link:hover {
+      background: #0056b3;
+    }
+
+    .button-row .secondary {
+      background: #6c757d;
+    }
+    .button-row .secondary:hover {
+      background: #565e64;
+    }
+
+    .error {
+      color: #b00;
+      margin-bottom: 16px;
+    }
+
+    /* Toast styles */
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #dc3545;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 10000;
+      pointer-events: none;
+    }
+    #toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Log In</h1>
+
+    {% if error %}
+      <div class="toast">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <div class="button-row">
+        <button type="submit">Log In</button>
+        <a href="{{ url_for('register') }}" class="button-link secondary">Register</a>
+      </div>
+    </form>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+
+      // show toast
+      toast.classList.add('show');
+
+      // hide after 3 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

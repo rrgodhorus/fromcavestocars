@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Choose an Item — From Caves To Cars</title>
+  <style>
+    /* Reset & basics */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { width:100%; height:100%; font-family:sans-serif; }
+
+    /* Container */
+    .page-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+    }
+    .header .logo img {
+      max-width: 100px;
+      height: auto;
+    }
+    .user-info {
+      text-align: right;
+      font-size: 0.9em;
+      color: rgba(0,0,0,0.6);
+      cursor: pointer;
+    }
+    .user-info:hover { color: rgba(0,0,0,0.9); }
+
+    /* Main scrollable content */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #fff;
+    }
+
+    /* Tag grid */
+    .tag-list {
+      display: grid;
+      text-align: center;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    /* Base tag */
+    .tag {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #eef;
+      color: #005;
+      padding: 8px 12px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.95em;
+      transition: background-color 0.2s;
+    }
+
+    /* Hover state */
+    .tag:hover {
+      background-color: #cce;
+    }
+
+    /* Main label */
+    .tag-label {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    /* Stats container */
+    .tag-stats {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* align counts at left within the tag */
+      font-size: 0.75em;
+      color: #555;
+      line-height: 1.2;
+    }
+
+    /* Each individual stat */
+    .tag-stats .stat {
+      /* no extra styling needed, but you could add spacing */
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <a href="/home"><img src="{{ url_for('static', filename='images/ChatGPT_fctc_logo.png') }}" alt="Logo"></a>
+        <h1>From Caves To Cars</h1>
+      </div>
+      <div class="user-info" onclick="location.href='{{ url_for('profile',backurl=url_for('home')) }}'">
+        {% if current_user.is_authenticated %}
+          <p><a href="{{ url_for('profile') }}">Profile for ({{ current_user.username }})</a></p>
+          <p><a href="{{ url_for('logout') }}">Logout</a></p>
+        {% else %}
+          <p><a href="{{ url_for('profile') }}">(Guest) Profile</a></p>
+          <p><a href="{{ url_for('login') }}">Login</a></p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main">
+      <h2>What do you want to make?</h2>
+      <div class="tag-list">
+        {% for tag in possibleitems %}
+        <a href="{{ tag.url }}" class="tag">
+          <span class="tag-label">{{ tag.label }}</span>
+          <div class="tag-stats">
+            <span class="stat">unique items: {{ tag.uniqueitems }}</span>
+            <span class="stat">total items: {{ tag.totalitems }}</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

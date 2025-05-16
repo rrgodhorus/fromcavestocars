@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Item Evaluation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='problem.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>{{ item_name }}</h1>
+      <p class="description">{{ description }}</p>
+    </header>
+
+    <main>
+      <h2>Select the most appropriate image:</h2>
+      <div class="image-grid">
+        {% for img in images %}
+        <div class="image-wrapper">
+          <img src="{{ img.url }}" alt="Option {{ loop.index }}" data-img-id="{{ img.id }}">
+        </div>
+        {% endfor %}
+      </div>
+
+      <form id="problem-form" method="POST" action="{{ post_url }}">
+        <input type="hidden" name="selected_image_id" id="selected-image-id">
+        <input type="hidden" name="item_name" value="{{ item_name }}">
+        <input type="hidden" name="referrer" value="{{ referrer }}">
+
+	<div class="radios">
+
+	<label>Is the description accurate?</label>
+	<div class="toggle">
+	<input type="radio" id="desc-yes" name="description_accurate" value="yes" checked>
+	<label for="desc-yes">Yes</label>
+
+	<input type="radio" id="desc-no" name="description_accurate" value="no">
+	<label for="desc-no">No</label>
+	</div>
+
+	<label>Is this the correct item?</label>
+	<div class="toggle">
+	<input type="radio" id="item-yes" name="correct_item" value="yes" checked>
+	<label for="item-yes">Yes</label>
+
+	<input type="radio" id="item-no" name="correct_item" value="no">
+	<label for="item-no">No</label>
+	</div>
+
+	<label>Are any of the images accurate?</label>
+	<div class="toggle">
+	<input type="radio" id="images-yes" name="good_image" value="yes" checked>
+	<label for="images-yes">Yes</label>
+
+	<input type="radio" id="images-no" name="good_image" value="no">
+	<label for="images-no">No</label>
+	</div>
+
+	</div>
+
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='problem.js') }}"></script>
+</body>
+</html>

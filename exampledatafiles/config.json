@@ -1,0 +1,9 @@
+{
+    "querystring": null,
+    "queryfile": "itemstomake.txt",
+    "rebuild": 29,
+    "ignorecorruption": false,
+    "verbose": 1,
+    "describe": true,
+    "primitiveageforall": true
+}

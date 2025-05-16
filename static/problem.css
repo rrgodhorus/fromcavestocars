@@ -1,0 +1,96 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.description {
+  font-size: 1.1em;
+  color: #444;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.image-wrapper {
+  border: 2px solid transparent;
+  padding: 5px;
+  cursor: pointer;
+  transition: border 0.3s;
+}
+
+.image-wrapper.selected {
+  border-color: green;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.radios {
+  margin-top: 20px;
+  font-size: 1em;
+}
+
+.radios label {
+  display: block;
+  margin: 8px 0;
+}
+
+.submit-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #218838;
+}
+
+.toggle {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0 20px 0;
+}
+
+.toggle input[type="radio"] {
+  display: none;
+}
+
+.toggle label {
+  padding: 10px 20px;
+  border: 2px solid #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: #eee;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.toggle input[type="radio"]:checked + label {
+  background-color: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}

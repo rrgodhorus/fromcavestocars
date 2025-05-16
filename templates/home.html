@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>From Caves To Cars</title>
+  <style>
+    /* Reset & basics */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { width: 100%; height: 100%; font-family: sans-serif; }
+
+    /* Full-page container */
+    .home-container {
+      position: relative;
+      width: 100%; height: 100%;
+      background-color: #111;
+      overflow: hidden;
+    }
+
+    /* Centered logo */
+    .logo-wrapper {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .logo-wrapper img {
+      max-width: 80vw;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+    }
+
+    /* Game title text, hidden until shown */
+    .game-title {
+      display: inline-block;
+      font-size: 4vw;
+      text-align: center;
+      position: absolute;
+      top: 15%; left: 50%;
+      transform: translate(-50%, -50%) translateY(10px);
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+      opacity: 0;
+      transition: opacity 1s ease, transform 1s ease;
+      pointer-events: none;
+    }
+    .game-title.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(0);
+    }
+
+
+    /* Primitive → Futuristic font progression */
+    .game-title .word-0 {
+      font-family: "Bradley Hand", serif;            /* classic serif */
+    }
+    .game-title .word-1 {
+      font-family: "Comic Sans MS", sans-serif;         /* neutral sans */
+    }
+    .game-title .word-2 {
+      font-family: "Courier New", monospace;        /* more modern */
+    }
+    .game-title .word-3 {
+      font-family: "Verdana", serif;    /* mechanical/futuristic */
+    }
+
+    /* Header user info */
+    .user-info {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: inline-block;          /* shrink to fit contents */
+      padding: 6px 12px;              /* breathing room around text */
+      background-color: rgba(255, 255, 255, 0.8);  /* semi-transparent dark */
+      color: #fff;                    /* white text */
+      font-size: 0.9em;
+      text-align: center;
+      text-decoration: none;          /* remove link underline */
+      border-radius: 4px;             /* rounded corners */
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+      z-index: 10;
+    }
+
+    .user-info:hover {
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #fff;
+    }
+
+    /* Bottom button bar */
+    .button-bar {
+      position: absolute;
+      bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+    }
+    .button-bar button {
+      padding: 12px 24px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background: #28a745;
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .button-bar button:hover {
+      background: #218838;
+    }
+
+    /* Suggestion modal */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center; justify-content: center;
+    }
+    .modal {
+      background: #fff;
+      padding: 20px; border-radius: 8px;
+      width: 90%; max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .modal textarea {
+      width: 100%; height: 100px;
+      margin-bottom: 12px;
+    }
+    .modal button {
+      padding: 8px 16px;
+      background: #007bff;
+      color: #fff;
+      border:none; border-radius:4px;
+      cursor:pointer;
+    }
+    .modal .close-btn {
+      background: #6c757d;
+      margin-left: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4ca5af;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 10000;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+    .toast.hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="home-container">
+    <!-- User info -->
+    <div class="user-info" onclick="location.href='{{ url_for('profile',backurl=url_for('home')) }}'">
+      {% if current_user.is_authenticated %}
+        <p><a href="{{ url_for('profile') }}">Profile for ({{ current_user.username }})</a></p>
+        <p><a href="{{ url_for('logout') }}">Logout</a></p>
+      {% else %}
+        <p><a href="{{ url_for('profile') }}">(Guest) Profile</a></p>
+        <p><a href="{{ url_for('login') }}">Login</a></p>
+      {% endif %}
+    </div>
+
+    <!-- Logo and title -->
+    <div class="logo-wrapper">
+      <img src="{{ url_for('static', filename='images/ChatGPT_fctc_logo.png') }}"
+           alt="From Caves To Cars Logo">
+      <div id="gameTitle" class="game-title">
+        <span class="word word-0">From</span>
+        <span class="word word-1">Caves</span>
+        <span class="word word-2">To</span>
+        <span class="word word-3">Cars</span>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-bar">
+      <button onclick="location.href='{{ url_for('game') }}'">
+        Make a random item
+      </button>
+      <button onclick="location.href='{{ url_for('choose') }}'">
+        Choose an item to make
+      </button>
+      <button onclick="openModal()">
+        Suggest an item to add
+      </button>
+    </div>
+  </div>
+
+  <!-- Suggestion Modal -->
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <form id="suggestion-form">
+        <h3>Suggest an Item</h3>
+        <textarea name="suggestion_text" placeholder="Your idea..."></textarea>
+        <div class="modal-buttons">
+          <button type="submit">Submit</button>
+          <button type="button" onclick="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Show title after short delay
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('gameTitle').classList.add('visible');
+      }, 800);
+    });
+
+    // Modal control
+    function openModal() {
+      document.getElementById('modalBackdrop').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('modalBackdrop').style.display = 'none';
+    }
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('suggestion-form');
+      const toast = document.getElementById('toast');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+
+        try {
+          const resp = await fetch('/suggestion', {
+            method: 'POST',
+            body: data
+          });
+          if (!resp.ok) throw new Error('Network response was not OK');
+
+          // Close modal:
+          closeModal();
+
+          // Show toast:
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('show'), 10);
+
+          // Hide after 3 seconds:
+          setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.classList.add('hidden'), 500);
+          }, 2000);
+
+          // Clear textarea:
+          form.querySelector('textarea').value = '';
+        } catch (err) {
+          alert('Failed to send suggestion.  Please try again.');
+          console.error(err);
+        }
+      });
+    });
+  </script>
+
+  <!-- Toast message -->
+  <div id="toast" class="toast hidden">Thank you for your suggestion!</div>
+</body>
+</html>
