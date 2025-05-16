@@ -16,7 +16,7 @@ steps:
         gcloud builds submit \
           --pack \
           --builder=gcr.io/buildpacks/builder:latest \
-          --tag=us-central1-docker.pkg.dev/${PROJECT_ID}/${YOUR_IMAGE_REPO}:${SHORT_SHA} \
+          --tag=us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
           .
 
   # 3) Deploy the built image to Cloud Run.
