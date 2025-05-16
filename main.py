@@ -38,7 +38,7 @@ def pre_startup():
 
     # Always run the application module's main() logic
     try:
-        run_app_main()
+        run_app_main(clouddeploy=True)
     except Exception as e:
         print(f"Error in fromcavestocars.main(): {e}")
 

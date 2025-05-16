@@ -803,7 +803,7 @@ def do_log(logmessage):
 
 import argparse
 
-def main():
+def main(clouddeploy=False):
     # Define the version number
     VERSION = "1.0.0"
 
@@ -872,10 +872,15 @@ def main():
         # starting the userdatabase
         USERDB.create_all()
 
-    # Run the webserver
-    print(f"Starting the web server with IP: {args.ip} and Port: {args.port}")
-    print(f"Interrupt with Ctrl-C.")
-    run_webserver(hostname=args.ip, port=args.port)
+    if clouddeploy:
+        # This is for deploying on Google Cloud Run
+        port = int(os.environ.get("PORT", 8080))
+        run_webserver(hostname="0.0.0.0", port=port)
+    else:
+        # Run the webserver
+        print(f"Starting the web server with IP: {args.ip} and Port: {args.port}")
+        print(f"Interrupt with Ctrl-C.")
+        run_webserver(hostname=args.ip, port=args.port)
 
 if __name__ == "__main__":
     main()
