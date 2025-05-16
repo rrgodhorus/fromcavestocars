@@ -804,85 +804,59 @@ def do_log(logmessage):
 import argparse
 
 def main(clouddeploy=False):
-    # Define the version number
     VERSION = "1.0.0"
-
-    # Create the argument parser
-    parser = argparse.ArgumentParser(
-        description="From Caves To Cars Game Server.  Runs the game server locally",
-        usage="%(prog)s [options]"
-    )
-
-    # Add optional arguments for IP and port
-    parser.add_argument(
-        "-i", "--ip",
-        type=str,
-        default="localhost",
-        help="IP address for the web server (default: localhost)"
-    )
-    parser.add_argument(
-        "-p", "--port",
-        type=int,
-        default=59722,
-        help="Port number for the web server (default: 59722)"
-    )
-    parser.add_argument(
-        "-s", "--suggestionlog",
-        type=str,
-        default="suggestions.log",
-        help="The logfile where suggestions are written"
-    )
-
-    parser.add_argument(
-        "-l", "--logfile",
-        type=str,
-        default="problems.log",
-        help="The logfile where content errors and requests for change are written"
-    )
-
-    # Add a version argument
-    parser.add_argument(
-        "-v", "--version",
-        action="version",
-        version=f"%(prog)s {VERSION}",
-        help="Show the version number and exit"
-    )
-
-
 
     # This "database" is read only for this program.
     global ITEMDB
     ITEMDB = fctcdb.ItemDB("itemdb.json")
-
-    # ensures things are creatable by ensuring they aren't a tool or raw 
-    # material of themself
     ITEMDB.prevent_infinite_recursion()
 
-    # Parse the arguments
-    args = parser.parse_args()
+    if clouddeploy:
+        # Use defaults without argument parsing
+        logfile = "problems.log"
+        suggestionlog = "suggestions.log"
+        ip = "0.0.0.0"
+        port = int(os.environ.get("PORT", 8080))
+    else:
+        # Create the argument parser
+        parser = argparse.ArgumentParser(
+            description="From Caves To Cars Game Server. Runs the game server locally",
+            usage="%(prog)s [options]"
+        )
 
-    # open the suggestion log file
+        # Add optional arguments for IP and port
+        parser.add_argument("-i", "--ip", type=str, default="localhost", help="IP address for the web server (default: localhost)")
+        parser.add_argument("-p", "--port", type=int, default=59722, help="Port number for the web server (default: 59722)")
+        parser.add_argument("-s", "--suggestionlog", type=str, default="suggestions.log", help="Logfile for suggestions")
+        parser.add_argument("-l", "--logfile", type=str, default="problems.log", help="Logfile for errors and issues")
+        parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {VERSION}", help="Show version and exit")
+
+        args = parser.parse_args()
+
+        logfile = args.logfile
+        suggestionlog = args.suggestionlog
+        ip = args.ip
+        port = args.port
+
+    # Open log files
     global LOGFILE
-    LOGFILE = open(args.logfile, "a+")
+    LOGFILE = open(logfile, "a+")
 
     global SUGGESTIONLOG
-    SUGGESTIONLOG = open(args.suggestionlog, "a+")
+    SUGGESTIONLOG = open(suggestionlog, "a+")
 
+    # Initialize user database
     with app.app_context():
-        # starting the userdatabase
         USERDB.create_all()
 
+    # Run the web server
     if clouddeploy:
-        # This is for deploying on Google Cloud Run
-        port = int(os.environ.get("PORT", 8080))
-        run_webserver(hostname="0.0.0.0", port=port)
+        run_webserver(hostname=ip, port=port)
     else:
-        # Run the webserver
-        print(f"Starting the web server with IP: {args.ip} and Port: {args.port}")
-        print(f"Interrupt with Ctrl-C.")
-        port = int(os.environ.get("PORT", 8080))
-        run_webserver(hostname="0.0.0.0", port=port)
-#        run_webserver(hostname=args.ip, port=args.port)
+        print(f"Starting the web server with IP: {ip} and Port: {port}")
+        print("Interrupt with Ctrl-C.")
+        run_webserver(hostname=ip, port=port)
 
 if __name__ == "__main__":
     main()
+
