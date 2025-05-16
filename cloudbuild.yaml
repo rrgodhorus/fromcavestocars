@@ -7,13 +7,17 @@ options:
   defaultLogsBucketBehavior: "REGIONAL_USER_OWNED_BUCKET"
 
 steps:
-  # 2) Build the container image using Google Buildpacks.
-  - name: "gcr.io/cloud-builders/pack"
+  # 2) Build & push your image via the 'pack' flag to gcloud:
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
     args:
-      - "build"
-      # Replace with your Artifact Registry repo and image name:
-      - "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
-      - "--builder=gcr.io/buildpacks/builder:latest"
+      - "-c"
+      - |
+        gcloud builds submit \
+          --pack \
+          --builder=gcr.io/buildpacks/builder:latest \
+          --tag=us-central1-docker.pkg.dev/${PROJECT_ID}/${YOUR_IMAGE_REPO}:${SHORT_SHA} \
+          .
 
   # 3) Deploy the built image to Cloud Run.
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
