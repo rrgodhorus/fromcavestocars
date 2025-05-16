@@ -8,11 +8,12 @@ options:
 
 steps:
   # 2) Build the container image using Google Buildpacks.
-  - name: "gcr.io/buildpacks/pack"
+  - name: "gcr.io/cloud-builders/pack"
     args:
       - "build"
       # Replace with your Artifact Registry repo and image name:
       - "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
+      - "--builder=gcr.io/buildpacks/builder:latest"
 
   # 3) Deploy the built image to Cloud Run.
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
@@ -20,7 +21,6 @@ steps:
     args:
       - "-c"
       - |
-        # Replace with your Cloud Run service name:
         gcloud run deploy fromcavestocars \
           --image us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
           --region us-central1 \
