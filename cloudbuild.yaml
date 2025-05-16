@@ -8,9 +8,8 @@ options:
 
 steps:
   # 2) Build the container image using Google Buildpacks.
-  - name: "gcr.io/buildpacks/builder"
+  - name: "gcr.io/buildpacks/pack"
     args:
-      - "pack"
       - "build"
       # Replace with your Artifact Registry repo and image name:
       - "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
