@@ -849,10 +849,9 @@ def main(clouddeploy=False):
     with app.app_context():
         USERDB.create_all()
 
-    # Run the web server
-    if clouddeploy:
-        run_webserver(hostname=ip, port=port)
-    else:
+    # Run the web server, if I'm not in the cloud.   Otherwise gunicorn runs as
+    # my web server.
+    if not clouddeploy:
         print(f"Starting the web server with IP: {ip} and Port: {port}")
         print("Interrupt with Ctrl-C.")
         run_webserver(hostname=ip, port=port)
