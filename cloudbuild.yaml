@@ -1,5 +1,7 @@
 # cloudbuild.yaml
 
+serviceAccount: "309015187694-compute@developer.gserviceaccount.com"
+
 # 1) Ensure logs are stored in a user-owned, regional bucket.
 options:
   defaultLogsBucketBehavior: "REGIONAL_USER_OWNED_BUCKET"
