@@ -1,46 +1,38 @@
-# cloudbuild.yaml
+# Tell Cloud Build to create/use a regional, user-owned logs bucket
 options:
-  # Keep logs in a regional, user-owned bucket rather than the default multi-region
-  defaultLogsBucketBehavior: "REGIONAL_USER_OWNED_BUCKET"
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET  # :contentReference[oaicite:0]{index=0}
 
-# Run all build steps as this service account
-serviceAccount: "309015187694-compute@developer.gserviceaccount.com"
-
-# Substitute your image registry + project shorthand
+# Define substitutions for reuse in steps
 substitutions:
-  _IMAGE: "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy"
+  _REGION: us-central1
+  _PROJECT: fromcavestocars
+  _SERVICE_ACCOUNT: 309015187694-compute@developer.gserviceaccount.com
 
-# Which artifacts (images) to push
+# Artifacts to push: your Flask app image
 images:
-  - "${_IMAGE}:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"  # :contentReference[oaicite:1]{index=1}
 
 steps:
-  # 1) Build your Flask app using Google Buildpacks
-  - name: "gcr.io/buildpacks/builder:v1"
+  # 1) Build the container image with Buildpacks
+  - name: "gcr.io/buildpacks/builder"
     args:
-      - "--path=."
-      - "--builder=gcr.io/buildpacks/builder:v1"
-      - "--env=GOOGLE_RUNTIME=python"      # adjust if you’re using a different language/runtime
-      - "--env=GOOGLE_BUILDPACK_DEBUG=true"  # optional: helps debug build issues
+      - build
+      - --builder=gcr.io/buildpacks/builder
+      - --path=.
+      - --tag=${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}  # :contentReference[oaicite:2]{index=2}
 
   # 2) Deploy the newly built image to Cloud Run
-  - id: "deploy-to-cloud-run"
-    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: "gcloud"
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
     args:
-      - "run"
-      - "deploy"
-      - "--image"
-      - "${_IMAGE}:${SHORT_SHA}"
-      - "--region"
-      - "us-central1"
-      - "--platform"
-      - "managed"
-      - "--service-account"
-      - "${_SERVICE_ACCOUNT}"
-      - "--allow-unauthenticated"     # remove or change if you want IAM-restricted access
-      - "--quiet"
+      - "-c"
+      - |
+        gcloud run deploy flask-service \
+          --project=${_PROJECT} \
+          --region=${_REGION} \
+          --image=${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
+          --platform=managed \
+          --service-account=${_SERVICE_ACCOUNT} \
+          --quiet  # :contentReference[oaicite:3]{index=3}
 
-# So you can override the service account via substitution if you ever need to
-substitutions:
-  _SERVICE_ACCOUNT: "309015187694-compute@developer.gserviceaccount.com"
+# (Triggers are defined in the Cloud Build UI against your GitHub repo)
