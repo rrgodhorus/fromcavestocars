@@ -8,9 +8,6 @@ substitutions:
   _PROJECT: from-caves-to-ca-1746047629693
   _SERVICE_ACCOUNT: 309015187694-compute@developer.gserviceaccount.com
 
-# Tell Cloud Build which image to publish
-images:
-  - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy/flask-service:${SHORT_SHA}"  # :contentReference[oaicite:5]{index=5}
 
 steps:
   # 1) Build & publish image with Buildpacks via Pack CLI
