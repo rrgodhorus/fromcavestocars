@@ -5,7 +5,7 @@ options:
 # Reusable substitutions
 substitutions:
   _REGION: us-central1
-  _PROJECT: fromcavestocars
+  _PROJECT: from-caves-to-ca-1746047629693
   _SERVICE_ACCOUNT: 309015187694-compute@developer.gserviceaccount.com
 
 # Tell Cloud Build which image to publish
