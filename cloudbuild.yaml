@@ -10,7 +10,7 @@ substitutions:
 
 # Tell Cloud Build which image to publish
 images:
-  - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"  # :contentReference[oaicite:5]{index=5}
+  - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy/flask-service:${SHORT_SHA}"  # :contentReference[oaicite:5]{index=5}
 
 steps:
   # 1) Build & publish image with Buildpacks via Pack CLI
@@ -18,7 +18,7 @@ steps:
     entrypoint: "pack"
     args:
       - "build"
-      - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
+      - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy/flask-service:${SHORT_SHA}"
       - "--builder"
       - "gcr.io/buildpacks/builder:latest"
       - "--network"
@@ -33,7 +33,7 @@ steps:
         gcloud run deploy flask-service \
           --project=${_PROJECT} \
           --region=${_REGION} \
-          --image=${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
+          --image=${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy/flask-service:${SHORT_SHA} \
           --platform=managed \
           --service-account=${_SERVICE_ACCOUNT} \
           --quiet  # suppress prompts in CI :contentReference[oaicite:7]{index=7}
