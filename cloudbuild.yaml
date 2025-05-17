@@ -22,7 +22,8 @@ steps:
       - "--builder"
       - "gcr.io/buildpacks/builder:latest"
       - "--network"
-      - "cloudbuild"  # ensures network access during build :contentReference[oaicite:6]{index=6}
+      - "cloudbuild"  
+      - "--publish"  # publish the image to the registry
 
   # 2) Deploy the image to Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
