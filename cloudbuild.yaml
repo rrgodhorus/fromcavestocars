@@ -1,27 +1,30 @@
-# Tell Cloud Build to create/use a regional, user-owned logs bucket
+# Use a regional, user-owned bucket for logs
 options:
-  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET  # :contentReference[oaicite:0]{index=0}
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET  # :contentReference[oaicite:4]{index=4}
 
-# Define substitutions for reuse in steps
+# Reusable substitutions
 substitutions:
   _REGION: us-central1
   _PROJECT: fromcavestocars
   _SERVICE_ACCOUNT: 309015187694-compute@developer.gserviceaccount.com
 
-# Artifacts to push: your Flask app image
+# Tell Cloud Build which image to publish
 images:
-  - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"  # :contentReference[oaicite:1]{index=1}
+  - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"  # :contentReference[oaicite:5]{index=5}
 
 steps:
-  # 1) Build the container image with Buildpacks
-  - name: "gcr.io/buildpacks/builder"
+  # 1) Build & publish image with Buildpacks via Pack CLI
+  - name: "gcr.io/k8s-skaffold/pack"
+    entrypoint: "pack"
     args:
-      - build
-      - --builder=gcr.io/buildpacks/builder
-      - --path=.
-      - --tag=${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}  # :contentReference[oaicite:2]{index=2}
+      - "build"
+      - "${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
+      - "--builder"
+      - "gcr.io/buildpacks/builder:latest"
+      - "--network"
+      - "cloudbuild"  # ensures network access during build :contentReference[oaicite:6]{index=6}
 
-  # 2) Deploy the newly built image to Cloud Run
+  # 2) Deploy the image to Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
     entrypoint: "bash"
     args:
@@ -33,6 +36,4 @@ steps:
           --image=${_REGION}-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
           --platform=managed \
           --service-account=${_SERVICE_ACCOUNT} \
-          --quiet  # :contentReference[oaicite:3]{index=3}
-
-# (Triggers are defined in the Cloud Build UI against your GitHub repo)
+          --quiet  # suppress prompts in CI :contentReference[oaicite:7]{index=7}
