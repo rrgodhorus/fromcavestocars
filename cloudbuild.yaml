@@ -2,31 +2,43 @@
 
 serviceAccount: "309015187694-compute@developer.gserviceaccount.com"
 
-# 1) Ensure logs are stored in a user-owned, regional bucket.
-options:
-  defaultLogsBucketBehavior: "REGIONAL_USER_OWNED_BUCKET"
-
 steps:
-  # 2) Build & push your image via the 'pack' flag to gcloud:
-  - name: "gcr.io/buildpacks/builder"
-    args:  [
-        "build",
-        "gcr.io/from-caves-to-ca-1746047629693/cloud-run-source-deploy",
-        "--path=."
+  # Step 1: Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t',
+        'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}',
+        '.'
       ]
 
-  # 3) Deploy the built image to Cloud Run.
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: "bash"
+  # Step 2: Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
     args:
-      - "-c"
-      - |
-        gcloud run deploy fromcavestocars \
-          --image us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA} \
-          --region us-central1 \
-          --platform managed \
-          --quiet
+      [
+        'push',
+        'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}'
+      ]
 
-# 4) Tell Cloud Build which image(s) to push to Artifact Registry.
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      [
+        'run',
+        'deploy',
+        'fromcavestocars',  # Replace with your actual service name
+        '--image',
+        'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}',
+        '--region',
+        'us-central1',
+        '--platform',
+        'managed',
+        '--service-account',
+        '309015187694-compute@developer.gserviceaccount.com',
+        '--allow-unauthenticated'  # Remove if your service should be private
+      ]
+
 images:
-  - "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}"
+  - 'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}'
