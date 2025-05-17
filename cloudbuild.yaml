@@ -1,48 +1,46 @@
 # cloudbuild.yaml
-
-serviceAccount: "309015187694-compute@developer.gserviceaccount.com"
-
-# 1) Ensure logs are stored in a user-owned, regional bucket.
 options:
+  # Keep logs in a regional, user-owned bucket rather than the default multi-region
   defaultLogsBucketBehavior: "REGIONAL_USER_OWNED_BUCKET"
 
-steps:
-  # Step 1: Build the container image
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'build',
-        '-t',
-        'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}',
-        '.'
-      ]
+# Run all build steps as this service account
+serviceAccount: "309015187694-compute@developer.gserviceaccount.com"
 
-  # Step 2: Push the image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'push',
-        'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}'
-      ]
+# Substitute your image registry + project shorthand
+substitutions:
+  _IMAGE: "us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy"
 
-  # Step 3: Deploy to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
-    args:
-      [
-        'run',
-        'deploy',
-        'fromcavestocars',  # Replace with your actual service name
-        '--image',
-        'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}',
-        '--region',
-        'us-central1',
-        '--platform',
-        'managed',
-        '--service-account',
-        '309015187694-compute@developer.gserviceaccount.com',
-        '--allow-unauthenticated'  # Remove if your service should be private
-      ]
-
+# Which artifacts (images) to push
 images:
-  - 'us-central1-docker.pkg.dev/from-caves-to-ca-1746047629693/cloud-run-source-deploy:${SHORT_SHA}'
+  - "${_IMAGE}:${SHORT_SHA}"
+
+steps:
+  # 1) Build your Flask app using Google Buildpacks
+  - name: "gcr.io/buildpacks/builder:v1"
+    args:
+      - "--path=."
+      - "--builder=gcr.io/buildpacks/builder:v1"
+      - "--env=GOOGLE_RUNTIME=python"      # adjust if you’re using a different language/runtime
+      - "--env=GOOGLE_BUILDPACK_DEBUG=true"  # optional: helps debug build issues
+
+  # 2) Deploy the newly built image to Cloud Run
+  - id: "deploy-to-cloud-run"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "--image"
+      - "${_IMAGE}:${SHORT_SHA}"
+      - "--region"
+      - "us-central1"
+      - "--platform"
+      - "managed"
+      - "--service-account"
+      - "${_SERVICE_ACCOUNT}"
+      - "--allow-unauthenticated"     # remove or change if you want IAM-restricted access
+      - "--quiet"
+
+# So you can override the service account via substitution if you ever need to
+substitutions:
+  _SERVICE_ACCOUNT: "309015187694-compute@developer.gserviceaccount.com"
