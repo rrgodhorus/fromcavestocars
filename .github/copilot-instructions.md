@@ -43,14 +43,24 @@ This repository contains a Flask-based web application that simulates technologi
 3. Set up environment variables for API keys
 
 ### Testing
-Run unit tests with:
+Run specific unit tests with:
 ```
 python test_openaiquerylib.py
 ```
 
-Tests can be run with these options:
+These tests can be run with these options:
 - `--flush` - Removes existing cache data and starts a new cache
 - `--nocache` - Does not use a cache for this test run
+
+To run all tests including integration tests, use:
+```
+python run_tests.py
+```
+
+The integration tests cover:
+- Page loading tests for home, login, registration, item choice, and game pages
+- User registration and login flow
+- Basic application functionality
 
 ### Running Locally
 1. Set up required environment variables
