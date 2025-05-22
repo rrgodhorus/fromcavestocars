@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Credits — From Caves To Cars</title>
+  <style>
+    /* Full-page background */
+    body, html {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: url("{{ url_for('static', filename='images/ChatGPT_fctc_think.png') }}") no-repeat center center fixed;
+      background-size: cover;
+      font-family: sans-serif;
+      color: #222;
+    }
+
+    /* Container */
+    .credits-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.85);
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Buttons */
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .button-row button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .button-row button:hover {
+      background: #0056b3;
+    }
+    .button-row .secondary {
+      background: #6c757d;
+    }
+    .button-row .secondary:hover {
+      background: #565e64;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="credits-container">
+    <h1>Credits</h1>
+
+    <p>placeholder</p>
+
+    <div class="button-row">
+      <button type="button" onclick="location.href='{{ url_for('home') }}'">
+        Return Home
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>
