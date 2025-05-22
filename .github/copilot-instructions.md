@@ -68,6 +68,7 @@ The project is set up to deploy to Google Cloud Run using Cloud Build:
 2. Update documentation when adding new features
 3. Follow the existing code style and patterns
 4. PRs with passing tests will automatically be marked as ready for review
+5. Never commit `__pycache__/*.pyc` or other build artifacts - refer to .gitignore
 
 ## Backup Procedures
 
