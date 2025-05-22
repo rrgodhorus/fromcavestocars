@@ -362,6 +362,12 @@ def home():
     return render_template("home.html", current_user = current_user, backurl=url_for("home"))
 
 
+@app.route("/credits")
+def credits():
+    # Render the credits page with placeholder text
+    return render_template("credits.html", current_user=current_user)
+
+
 @app.route("/suggestion", methods=["POST"])
 def suggestion():
     user_input = request.form.get("suggestion_text", "").strip()
