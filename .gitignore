@@ -13,10 +13,19 @@ venv/
 env/
 ENV/
 
-# Local development settings
-.env
-.vscode/
+# Local development files
+*.env
+*.env.local
+
+# Cache files
+*.cache
+*.cache.json
+
+# IDE specific files
 .idea/
+.vscode/
+*.swp
+*.swo
 
 # Logs and databases
 *.log
