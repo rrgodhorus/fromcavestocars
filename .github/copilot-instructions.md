@@ -79,6 +79,9 @@ The project is set up to deploy to Google Cloud Run using Cloud Build:
 3. Follow the existing code style and patterns
 4. PRs with passing tests will automatically be marked as ready for review
 5. Never commit `__pycache__/*.pyc` or other build artifacts - refer to .gitignore
+6. Do not add or modify files not directly related to your changes
+7. Avoid committing database files (*.db), cache files, or any files excluded by .gitignore
+8. Make minimal, focused changes that directly address the issue at hand
 
 ## Backup Procedures
 
