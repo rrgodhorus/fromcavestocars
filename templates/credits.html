@@ -28,6 +28,27 @@
       text-align: center;
       margin-bottom: 20px;
     }
+    
+    /* Content styling */
+    .credits-content {
+      line-height: 1.6;
+    }
+    
+    .credits-content a {
+      color: #0366d6;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .credits-content a:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+    
+    .credits-content ol {
+      padding-left: 1.5em;
+    }
 
     /* Buttons */
     .button-row {
@@ -63,7 +84,22 @@
   <div class="credits-container">
     <h1>Credits</h1>
 
-    <p>placeholder</p>
+    <div class="credits-content">
+      <p>Welcome to what might be the world's most peculiar experiment in software development!</p>
+      
+      <p><a href="https://ssl.engineering.nyu.edu/personalpages/jcappos/" target="_blank">Justin Cappos</a> had the core idea for this project—a technological progression game from primitive tools to modern marvels. Unlike conventional development, Justin embraced the unconventional approach of partnering with Large Language Models to bring this vision to life.</p>
+      
+      <p>A substantial portion of the code, especially the web aspects you're currently experiencing, was nearly entirely written by <a href="https://openai.com" target="_blank">OpenAI</a> technologies and <a href="https://github.com/features/copilot" target="_blank">GitHub Copilot</a>. The early backend was more human-crafted after some LLM-generated code struggles, while the frontend emerged almost fully from AI suggestions.</p>
+      
+      <p>Perhaps most intriguingly, this project is now primarily maintained by <a href="https://copilot.github.com/" target="_blank">GitHub's Copilot Agent</a>—yes, an AI is updating this AI-written code. This experiment might represent either:</p>
+      
+      <ol>
+        <li>A spectacular insight into the future of software maintenance, where AIs manage their own creations with minimal human oversight, or</li>
+        <li>A colossal failure waiting to happen, like asking a toddler to fix a broken vase with superglue and hoping for the best.</li>
+      </ol>
+      
+      <p>Either way, this project serves as a fascinating demonstration of how far LLM capabilities extend into complex software development tasks—and where they still fall short. So whether we're witnessing the dawn of AI-maintained software or just an amusing academic experiment, you're looking at code that's been touched more by silicon intelligence than human hands.</p>
+    </div>
 
     <div class="button-row">
       <button type="button" onclick="location.href='{{ url_for('home') }}'">
