@@ -33,6 +33,7 @@ prioritize 1 and 2 first.
 """
 
 import os
+import subprocess
 
 # This is read only for this program because we're just reading things in.
 # I will need to store user state (possibly), but it goes elsewhere.
@@ -347,6 +348,60 @@ def _get_user_id():
     else:
         return session['guest_id']
 
+
+def _get_git_version():
+    """Get the current git commit hash.
+    
+    This function tries multiple methods to get the git version:
+    1. Check common CI environment variables
+    2. Try to read .git/HEAD and .git/refs files directly
+    3. Only use git subprocess as a last resort with a timeout
+    
+    This approach is more reliable in CI environments where
+    subprocess execution or git access might be restricted.
+    
+    Returns:
+        str: The 8-character git commit hash or "unknown"
+    """
+    # Check common CI environment variables first
+    for env_var in ['GITHUB_SHA', 'CI_COMMIT_SHA', 'GIT_COMMIT']:
+        if env_var in os.environ and os.environ[env_var]:
+            return os.environ[env_var][:8]
+    
+    # Try to read directly from the .git directory
+    try:
+        git_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.git')
+        if os.path.exists(git_dir):
+            # Try to read HEAD reference
+            with open(os.path.join(git_dir, 'HEAD'), 'r') as f:
+                head_content = f.read().strip()
+                
+            # If it's a reference, resolve it
+            if head_content.startswith('ref:'):
+                ref_path = head_content.split('ref: ')[1]
+                ref_full_path = os.path.join(git_dir, ref_path)
+                if os.path.exists(ref_full_path):
+                    with open(ref_full_path, 'r') as f:
+                        return f.read().strip()[:8]
+            else:
+                # If HEAD is a direct commit hash
+                return head_content[:8]
+    except (IOError, IndexError, FileNotFoundError):
+        pass
+        
+    # As a last resort, try git command with timeout
+    try:
+        # Set a timeout to prevent hanging and redirect stderr to avoid noise
+        return subprocess.check_output(
+            ['git', 'rev-parse', 'HEAD'], 
+            stderr=subprocess.DEVNULL,
+            timeout=2
+        ).strip().decode('utf-8')[:8]
+    except (subprocess.SubprocessError, FileNotFoundError, UnicodeDecodeError):
+        pass
+        
+    return "unknown"
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -357,9 +412,14 @@ def home():
         userstatedict[uid]={}
         userstatedict[uid]['state'] = {}
 
+    # Get the git version
+    git_version = _get_git_version()
 
     # Generate the home page with links
-    return render_template("home.html", current_user = current_user, backurl=url_for("home"))
+    return render_template("home.html", 
+                          current_user=current_user, 
+                          backurl=url_for("home"),
+                          git_version=git_version)
 
 
 @app.route("/credits")
