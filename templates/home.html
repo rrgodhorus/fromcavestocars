@@ -96,6 +96,9 @@
       transform: translateX(-50%);
       display: flex;
       gap: 20px;
+      justify-content: center;
+      width: 90%;
+      max-width: 900px;
     }
     .button-bar button {
       padding: 12px 24px;
@@ -107,6 +110,10 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       cursor: pointer;
       transition: background 0.3s;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      text-align: center;
     }
     .button-bar button:hover {
       background: #218838;
