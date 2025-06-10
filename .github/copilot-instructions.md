@@ -77,11 +77,12 @@ The project is set up to deploy to Google Cloud Run using Cloud Build:
 1. Make sure all unit tests pass before submitting
 2. Update documentation when adding new features
 3. Follow the existing code style and patterns
-4. PRs with passing tests will automatically be marked as ready for review
+4. PRs with passing tests must be submitted as "Ready for review" (not as Drafts). Only use Draft status if the PR is not ready for any feedback or review.
 5. Never commit `__pycache__/*.pyc` or other build artifacts - refer to .gitignore
 6. Do not add or modify files not directly related to your changes
 7. Avoid committing database files (*.db), cache files, or any files excluded by .gitignore
 8. Make minimal, focused changes that directly address the issue at hand
+9. Do not submit pull requests as Drafts. PRs should be "Ready for review" unless you have a specific reason to mark them as a Draft.
 
 ## Backup Procedures
 
