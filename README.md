@@ -21,6 +21,17 @@ Note: I may back up the user and other databases periodically, but don't expect 
 If you find a security problem here, please email jcappos@nyu.edu.  Since this doesn't have any sensitive data and no one is using this in production for anything, I'm not going to ask you to bother with GPG signing, etc.
 
 ## What is here?
-Most of the files have a comment block at the top or are only a few lines.  However, to run this, you need to set up a bunch of environment variables with your API keys.  You also would need to copy everything in examplefiles/ to the root directory of the project. 
+Most of the files have a comment block at the top or are only a few lines.  However, to run this, you need to set up a bunch of environment variables with your API keys.  You also would need to copy everything in exampledatafiles/ to the root directory of the project.
+
+### Setting up the development environment
+To pull the necessary data files from upstream (the exampledatafiles/ directory), run:
+```bash
+./pull_upstream.sh
+```
+
+To verify all required files are present, run:
+```bash
+./check_upstream_data.py
+``` 
 
 Note that this design was done by a mix of just going where the LLM took me and me steering it in reasonable directions.  So it has a really weird mix of json files, databases, etc.  It also assumes that there is persistent state (see userstatedict and the local database files).   This all will need to be converted over to run in a stateless manner in the cloud.
